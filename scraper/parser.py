@@ -4,6 +4,7 @@ from typing import TypedDict, List
 
 class Tweet(TypedDict):
   is_retweet: bool
+  header: str
   name: str
   handle: str
   tweet: str
@@ -36,6 +37,7 @@ class TwitterParser(HTMLParser):
     self.retrieve_time = datetime.now().timestamp()
     self.current_tweet = {
       "is_retweet": False,
+      "header": "",
       "name": "",
       "handle": "",
       "tweet": "",
@@ -52,7 +54,17 @@ class TwitterParser(HTMLParser):
         v = v.rstrip() # spaces in class names
         if k == "class" and v == "tweet":
           self.start_tweet = True
-          self.current_tweet: Tweet = { "is_retweet": False, "name": "", "handle": "", "tweet": "", "timestamp": "", "checked": False, "key": "", "retrieved_time": self.retrieve_time }
+          self.current_tweet: Tweet = {
+            "is_retweet": False,
+            "header": "",
+            "name": "",
+            "handle": "",
+            "tweet": "",
+            "timestamp": "",
+            "checked": False,
+            "key": "",
+            "retrieved_time": self.retrieve_time
+          }
     if self.start_tweet and tag == "tr":
       for k, v in attrs:
         v = v.rstrip() # spaces in class names
@@ -95,19 +107,19 @@ class TwitterParser(HTMLParser):
     if tag == "td":
       self.start_tweet_timestamp = False
 
-  def handle_data(self, data):
+  def handle_data(self, data:str):
     if self.start_tweet_retweet:
       if "retweeted" in data:
         self.current_tweet["is_retweet"] = True
+        self.current_tweet["header"] = data
     if self.start_tweet_header:
       pass
       # print(f"Header data: {data}")
     if self.start_tweet_content:
-      self.current_tweet["tweet"] += data
+      self.current_tweet["tweet"] = self.current_tweet["tweet"].strip() + " " + data.strip()
     if self.start_tweet_name:
       self.current_tweet["name"] += data
     if self.start_tweet_handle:
       self.current_tweet["handle"] += data
     if self.start_tweet_timestamp:
       self.current_tweet["timestamp"] += data
-  
