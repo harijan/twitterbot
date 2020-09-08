@@ -14,13 +14,16 @@ LINE_LENGTH = 80
 def display_tweet(tweet: Tweet):
   top_string = datetime.now().isoformat()
   top_border: str = f"{top_string}{tweet['timestamp'].rjust(LINE_LENGTH-len(top_string),'-')}"
-  header: str = f"{tweet['name']} [{tweet['handle']}]"
+  header: str = ""
+  if tweet["is_retweet"]:
+    header += f"{tweet['header']}\n"
+  header += f"{tweet['name']} [{tweet['handle']}]"
   body: str = tweet['tweet']
   bottom_border: str = "-" * LINE_LENGTH
-  print(f"{top_border}", flush=True)
-  print(f"{header}", flush=True)
-  print(f"{body}", flush=True)
-  print(f"{bottom_border}", flush=True)
+  print(top_border, flush=True)
+  print(header, flush=True)
+  print(body, flush=True)
+  print(bottom_border, flush=True)
 
 def run(user: str, initial:Optional[bool] = False, interval: Optional[int] = None, s: Optional[scheduler] = None):
   tweets: List[Tweet] = twitter.get_tweets(user, initial=initial)
@@ -28,7 +31,7 @@ def run(user: str, initial:Optional[bool] = False, interval: Optional[int] = Non
     display_tweet(tweet)
 
   if len(tweets) == 0:
-    print("No new tweets!", flush=True)
+    print(f"{datetime.now().isoformat()} No new tweets!", flush=True)
   
   if interval and s:
     s.enter(interval, 1, run, argument=(user,), kwargs={"interval":interval, "s": s})
@@ -36,10 +39,10 @@ def run(user: str, initial:Optional[bool] = False, interval: Optional[int] = Non
 if __name__ == "__main__":
   parser:ArgumentParser = ArgumentParser(description="Scan the latest tweets of given user.")
   parser.add_argument("-u", "--user", default="", type=str, help="twitter handle you woant to display.")
-  parser.add_argument("-i", "--interval", default=10*60, type=int, required=False, help="how quickly you want to recan tweets in seconds.")
-  parser.add_argument("-s", "--singleshot", default=False, action="store_true", help="just run a single time.")
-  parser.add_argument("--http", default=False, action="store_true", help="setup http server.")
-  parser.add_argument("-p", "--port", default=8000, type=int, help="setup port for http server.")
+  parser.add_argument("-i", "--interval", default=10*60, type=int, required=False, help="How quickly you want to recan tweets in seconds. [600]")
+  parser.add_argument("-s", "--singleshot", default=False, action="store_true", help="just run a single time. [false]")
+  parser.add_argument("--http", default=False, action="store_true", help="setup http server [false]")
+  parser.add_argument("-p", "--port", default=8000, type=int, help="Setup port for http server [8000]")
   
   args: Dict = parser.parse_args()
 
