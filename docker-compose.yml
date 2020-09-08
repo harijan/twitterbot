@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  twitterbot:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: twitterbot:latest
+    environment:
+      TWITTER_USER: CriticalRole
+    ports:
+      - '9001:8000'
