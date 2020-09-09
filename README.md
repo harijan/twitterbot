@@ -2,9 +2,9 @@
  - include retweets.
  - decode tweets into utf-8
  - don't store results across runs
- - i think status id is time-ordered for the original tweet. but tweet list is ordered by retweet time - doesn't seem like we can scrape this time.
- - 
- - overwrite httpserver log so it doesn't pollute stdout. not a great idea.
+ - i think status id is time-ordered for the original tweet - not much documentation on it. (https://developer.twitter.com/en/docs/twitter-ids)
+ - tweet list is ordered by retweet time - doesn't seem like we can scrape it or we could with some jangling.
+ - overwrite httpserver log so it doesn't pollute stdout. it probably doesn't matter too much, but hey ¯\\\_(ツ)\_/¯
  - when no new tweets are found - print out to stdout that no new tweets are found.
 
 # command line usage:
@@ -34,3 +34,9 @@ Sample docker run:
 ```
 docker run --rm -p 8000:8000 -e TWITTER_USER=CriticalRole --name twitterbot twitterbot
 ```
+or use the included docker-compose
+```
+docker-compose -f docker-compose.yml up -d
+```
+
+stuff is printed out to stdout -  so use ```docker logs [-f] [container]``` to check them out.
