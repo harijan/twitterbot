@@ -1,4 +1,8 @@
 # Assumptions:
+ - only use python standard library, except for the test framework.
+ - to run the tests, use the requirements.txt or just install pytest
+    - ```pip install pytest```
+    - run ```pytest``` from the project root directory.
  - include retweets.
  - decode tweets into utf-8
  - don't store results across runs
